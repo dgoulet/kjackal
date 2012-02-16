@@ -28,26 +28,18 @@ static int (*__kernel_text_address_sym)(unsigned long addr);
 /*
  * Two out of three symbols needed by kjackal needs CONFIG_KALLSYMS_ALL. The
  * fallback is to use System-map-* with the Makefile.
+ *
+ * kallsyms_lookup_name was re-exported in from 2.6.33 + version.
  */
-#if defined(CONFIG_KALLSYMS) && defined(CONFIG_KALLSYMS_ALL)
-
-/*
- * kallsyms_lookup_name was re-exported in from 2.6.33 +
- */
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 32)
+#if defined(CONFIG_KALLSYMS) && defined(CONFIG_KALLSYMS_ALL) && \
+	(LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 32))
 void *lookup_kernel_symbol(const char *name)
 {
 	return (void *) kallsyms_lookup_name(name);
 }
-#else
-/*
- * kallsyms is available but the lookup function is not exported before this
- * kernel version so we simply stop compilation.
- */
-#error "Kernel version not compatible (version >= 2.6.33)"
-#endif /* LINUX_VERSION_CODE */
 
-#else /* CONFIG_KALLSYMS && CONFIG_KALLSYMS_ALL */
+#else /* CONFIG_KALLSYMS ... */
+
 void *lookup_kernel_symbol(const char *name)
 {
 	void *sym = NULL;
@@ -68,7 +60,7 @@ void *lookup_kernel_symbol(const char *name)
 
 	return sym;
 }
-#endif /* CONFIG_KALLSYMS && CONFIG_KALLSYMS_ALL */
+#endif /* CONFIG_KALLSYMS && CONFIG_KALLSYMS_ALL && LINUX_VERSION_CODE */
 
 /*
  * Check if addr is in core kernel text.
