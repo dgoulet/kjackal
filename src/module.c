@@ -56,8 +56,6 @@ struct module *module_find_hidden_from_addr(unsigned long addr)
 		return NULL;
 	}
 
-	spin_lock(&module_kset_sym->list_lock);
-
 	/*
 	 * Iterate over kobject from the module kset. Try to identify a module
 	 * kobject to an unfindable module. If the module was removed from the
@@ -91,12 +89,9 @@ struct module *module_find_hidden_from_addr(unsigned long addr)
 			DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
 					mk->mod->module_core + mk->mod->core_size);
 			module_list_symbols(mk->mod);
-			spin_unlock(&module_kset_sym->list_lock);
 			return mk->mod;
 		}
 	}
-
-	spin_unlock(&module_kset_sym->list_lock);
 
 	return NULL;
 }
@@ -116,8 +111,6 @@ void module_find_all_hidden(void)
 		DMESG("Unable to find module_kset. Skipping hidden module lookup");
 		return;
 	}
-
-	spin_lock(&module_kset_sym->list_lock);
 
 	/*
 	 * Iterate over kobject from the module kset. Try to identify a module
@@ -154,8 +147,6 @@ void module_find_all_hidden(void)
 			module_unlock_list();
 		}
 	}
-
-	spin_unlock(&module_kset_sym->list_lock);
 }
 
 /*
