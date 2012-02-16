@@ -36,12 +36,12 @@
 
 #define SYSCALL_TABLE_INIT(void)        \
 	do {                                    \
-		if (sys_call_table == NULL) {       \
+		if (__sys_call_table_ptr == NULL) {       \
 			syscall_init_table();           \
 		}                                   \
 	} while (0);
 
-static unsigned long *sys_call_table;
+static unsigned long *__sys_call_table_ptr;
 
 /*
  * Detect any syscall address from the global table that is outside kernel text
@@ -56,7 +56,7 @@ void syscall_hijack_detection(void)
 	/* Safety net */
 	SYSCALL_TABLE_INIT();
 
-	if (sys_call_table == NULL) {
+	if (__sys_call_table_ptr == NULL) {
 		DMESG("Unable to get sys_call_table address. Aborting");
 		goto end;
 	}
@@ -66,7 +66,7 @@ void syscall_hijack_detection(void)
 	 * core kernel text area which is suppose to be.
 	 */
 	for (i = 0; i < NR_syscalls; i++) {
-		syscall_addr = sys_call_table[i];
+		syscall_addr = __sys_call_table_ptr[i];
 
 		/*
 		 * Is the syscall addr is in kernel text section.
@@ -113,5 +113,5 @@ end:
  */
 void syscall_init_table(void)
 {
-	sys_call_table = lookup_kernel_symbol("sys_call_table");
+	__sys_call_table_ptr = lookup_kernel_symbol("sys_call_table");
 }
