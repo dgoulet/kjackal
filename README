@@ -19,7 +19,7 @@ ABOUT:
 
 Kjackal is a one time Linux kernel module rootkit scanner. It is *not* a
 rootkit AV or any IPS bimbo-blabla system. The purpose of kjackal is to quickly
-scan the Linux kernel for rookit.
+scan the Linux kernel for rootkit(s).
 
 So commonly, a kernel module rootkit, once loaded, will hijack the syscall
 table, the proc fileystem (to hide itself) and tcp4 operations to hide
@@ -49,7 +49,10 @@ kjackal still have some card up his sleeve ;) to get them.
 
 REQUIREMENTS:
 
-- Linux Kernel Headers 2.6.33 or later
+Tested on 2.6.32 up to 3.3. However, it might work for older kernel. Please
+report if you succeed.
+
+- Linux Kernel Headers 2.6.32 or later
 
   * Debian: sudo apt-get install linux-headers
   * Redhat: sudo yum install kernel-headers
