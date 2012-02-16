@@ -1,0 +1,89 @@
+Kjackal project
+----------------
+
+NOTICE:
+
+In no situation will we be liable for any loss or damage including without
+limitation, indirect or consequential loss or damage, or any loss or damage
+whatsoever arising from loss of data or profits arising out of, or in
+connection with, the use of the data in this repository.
+
+This is a kernel module so like any other kernel module things can go bad. It
+will NOT destroy any data or corrupt your hard drive. At worst, you'll get a
+kernel panic and you'll have to reboot. If this happens, PLEASE report it :).
+
+Feel free to check the code, there is NO hidden backdoors or any shenanigans to
+install any undesired software on your computer.
+
+ABOUT:
+
+Kjackal is a one time Linux kernel module rootkit scanner. It is *not* a
+rootkit AV or any IPS bimbo-blabla system. The purpose of kjackal is to quickly
+scan the Linux kernel for rookit.
+
+So commonly, a kernel module rootkit, once loaded, will hijack the syscall
+table, the proc fileystem (to hide itself) and tcp4 operations to hide
+backdoors' port.
+
+Kjackal uses multiple methods to find hidden modules. Here is the list:
+
+1) Syscall hijack detection.
+
+The primary technique is to iterate over the syscall table and test
+every address to see if it is in the core kernel text section where it's
+suppose to be. If yes, we'll check for a module "hosting" this address.
+
+2) TCP IPv4 seq_ops hijack detection.
+
+This technique is often used to hide ports or any sensitive information.
+The 'seq_ops.show' is checked here to the core kernel text addr. space.
+
+3) /proc filesystem hijack detection.
+
+Check the readdir ops of /proc.
+
+4) Search for hidden module
+
+Search for all *hidden* module which tries to remove them self from existence.
+kjackal still have some card up his sleeve ;) to get them.
+
+REQUIREMENTS:
+
+- Linux Kernel Headers 2.6.33 or later
+
+  * Debian: sudo apt-get install linux-headers
+  * Redhat: sudo yum install kernel-headers
+  * Arch: sudo pacman -S linux-headers
+  * Gentoo: sudo emerge linux-headers
+
+COMPILE:
+
+# make
+
+USAGE:
+
+# insmod kjackal.ko
+# dmesg
+
+Kjackal prints the report in dmesg.
+
+# rmmod kjackal
+
+TESTS:
+
+The tests/ directory contains three simple kernel module to test kjackal.
+Please read carefully the comments in the .c file before loading one of them.
+
+WHAT'S NEXT:
+
+So time for the fun part.
+
+*IF* kjackal detects a rogue kernel module, please report it so we can
+investigate it! There is a feature in src/module.c called "module_dump_memory"
+which can be used to dump the entire module memory if detected. It will be
+created in /tmp/rootkit-module.dump. Enable this and we'll have fun after that.
+
+Also, PLEASE contribute your ideas/comments/code/bugs to this project to make
+it better and more efficient at finding kernel module rookits. Please send me
+any rootkit code you came upon to study them or any commercial one would be
+really nice also.
