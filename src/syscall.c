@@ -25,6 +25,7 @@
 #include <linux/mutex.h>
 #include <asm/unistd.h>
 #include <linux/syscalls.h>
+#include <asm/asm-offsets.h>
 
 #ifdef CONFIG_KALLSYMS
 #include <linux/kallsyms.h>

@@ -19,6 +19,6 @@ all:
 	@sed -i 's/$(TABLE)/SYS_CALL_TABLE/g' src/common.c
 	@sed -i 's/$(MOD_KSET)/MODULE_KSET/g' src/common.c
 	@sed -i 's/$(KERN_TEXT)/CORE_KERNEL_TEXT/g' src/common.c
-clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 
+clean:
+	rm -f *.o *.ko *.mod.c *.cmd *.mod Module.symvers modules.order
