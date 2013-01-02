@@ -47,7 +47,7 @@ void procfs_hijack_detection(void)
 	}
 
 	ret = is_addr_kernel_text((unsigned long) fp->f_op->readdir);
-	if (ret) {
+	if (!ret) {
 		DMESG("/proc readdir was changed to %p", fp->f_op->readdir);
 
 		module_lock_list();
