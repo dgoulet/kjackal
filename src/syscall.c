@@ -49,7 +49,7 @@ static unsigned long *__sys_call_table_ptr;
  */
 static void init_syscall_table(void)
 {
-	__sys_call_table_ptr = kj_kernel_symbol_lookup("sys_call_table");
+	__sys_call_table_ptr = kj_kernel_symbol_lookup(KJ_SYSCALL_TABLE_SYM);
 }
 
 /*

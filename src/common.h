@@ -22,6 +22,10 @@
 
 #define KJ_DMESG(fmt, args...) printk("kjackal: " fmt "\n", ## args);
 
+#define KJ_SYSCALL_TABLE_SYM   "sys_call_table"
+#define KJ_MODULE_KSET_SYM     "module_kset"
+#define KJ_CORE_KERN_TEXT_SYM  "core_kernel_text"
+
 int kj_is_addr_kernel_text(unsigned long addr);
 
 void *kj_kernel_symbol_lookup(const char *name);

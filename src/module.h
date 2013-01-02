@@ -22,11 +22,13 @@
 
 #include <linux/module.h>
 
-#define KJ_MODULE_INIT_KSET()                                          \
-	do {                                                               \
-		if (!module_kset_sym) {                                        \
-			module_kset_sym = kj_kernel_symbol_lookup("module_kset");  \
-		}                                                              \
+#include "common.h"
+
+#define KJ_MODULE_INIT_KSET()                                              \
+	do {                                                                   \
+		if (!module_kset_sym) {                                            \
+			module_kset_sym = kj_kernel_symbol_lookup(KJ_MODULE_KSET_SYM); \
+		}                                                                  \
 	} while (0);
 
 #define KJ_MODULE_TO_KOBJECT(n) container_of(n, struct module_kobject, kobj)

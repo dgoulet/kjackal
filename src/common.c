@@ -53,12 +53,12 @@ void *kj_kernel_symbol_lookup(const char *name)
 	 *
 	 * DO NOT CHANGE this arbitrarily unles you know what you are doing.
 	 */
-	if (strcmp(name, "sys_call_table") == 0) {
-		sym = (void*)0xSYS_CALL_TABLE;
-	} else if (strcmp(name, "module_kset") == 0) {
-		sym = (void*)0xMODULE_KSET;
-	} else if (strcmp(name, "core_kernel_text") == 0) {
-		sym = (void*)0xCORE_KERNEL_TEXT;
+	if (strcmp(name, KJ_SYSCALL_TABLE_SYM) == 0) {
+		sym = (void*)0xMARKER_SYS_CALL_TABLE;
+	} else if (strcmp(name, KJ_MODULE_KSET_SYM) == 0) {
+		sym = (void*)0xMARKER_MODULE_KSET;
+	} else if (strcmp(name, KJ_CORE_KERN_TEXT_SYM) == 0) {
+		sym = (void*)0xMARKER_CORE_KERNEL_TEXT;
 	}
 
 	return sym;
@@ -74,7 +74,7 @@ int kj_is_addr_kernel_text(unsigned long addr)
 {
 	if (!__kernel_text_address_sym) {
 		__kernel_text_address_sym =
-			kj_kernel_symbol_lookup("core_kernel_text");
+			kj_kernel_symbol_lookup(KJ_CORE_KERN_TEXT_SYM);
 	}
 
 	if (__kernel_text_address_sym) {
