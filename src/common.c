@@ -40,6 +40,9 @@ void *kj_kernel_symbol_lookup(const char *name)
 
 #else /* CONFIG_KALLSYMS ... */
 
+/*
+ * Return kernel symbol address for the given symbol name.
+ */
 void *kj_kernel_symbol_lookup(const char *name)
 {
 	void *sym = NULL;

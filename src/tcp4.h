@@ -20,10 +20,6 @@
 #ifndef KJACKAL_TCP4_H
 #define KJACKAL_TCP4_H
 
-/*
- * Check for seq_ops.show hijack normally used to hide port from user space
- * with netstat accessing /proc.
- */
 void kj_tcp4_hijack_detection(void);
 
 #endif /* KJACKAL_TCP4_H */

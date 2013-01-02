@@ -31,6 +31,10 @@
 static const char *module_memdump_path= "/tmp/rootkit-module.dump";
 static struct kset *module_kset_sym;
 
+/*
+ * Try to find an hidden module using a given address that should be in the LKM
+ * address space.
+ */
 struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 {
 	int end = 0;
@@ -47,9 +51,9 @@ struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 	}
 
 	/*
-	 * Iterate over kobject from the module kset. Try to identify a module
-	 * kobject to an unfindable module. If the module was removed from the
-	 * global module list, we'll be able to find it from the module kset.
+	 * Iterate over kobject(s) from the module kset. If the module was removed
+	 * from the global module list, we'll be able to find it from the module
+	 * kset.
 	 */
 	list_for_each_entry(k, &module_kset_sym->list, entry) {
 		name = kobject_name(k);
@@ -69,8 +73,8 @@ struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 			continue;
 		}
 
-		if (addr >= (unsigned long)mk->mod->module_core &&
-				addr < (unsigned long)(mk->mod->module_core + mk->mod->core_size)) {
+		if (addr >= (unsigned long) mk->mod->module_core &&
+				addr < (unsigned long) (mk->mod->module_core + mk->mod->core_size)) {
 			/*
 			 * We have an allocated module name but no module found in the
 			 * global list. We got our hidden module! ;).
@@ -86,6 +90,9 @@ struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 	return NULL;
 }
 
+/*
+ * Try to find all possible hidden module.
+ */
 void kj_module_find_all_hidden(void)
 {
 	int end = 0;
@@ -103,9 +110,9 @@ void kj_module_find_all_hidden(void)
 	}
 
 	/*
-	 * Iterate over kobject from the module kset. Try to identify a module
-	 * kobject to an unfindable module. If the module was removed from the
-	 * global module list, we'll be able to find it from the module kset.
+	 * Iterate over kobject(s) from the module kset. If the module was removed
+	 * from the global module list, we'll be able to find it from the module
+	 * kset.
 	 */
 	list_for_each_entry(k, &module_kset_sym->list, entry) {
 		name = kobject_name(k);
