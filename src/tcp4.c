@@ -19,8 +19,8 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <net/tcp.h>
 #include <net/net_namespace.h>
+#include <net/tcp.h>
 
 #include "common.h"
 #include "module.h"
@@ -34,46 +34,45 @@ void tcp4_hijack_detection(void)
 {
 	int got_tcp = 0, got_mod = 0, ret;
 	struct module *mod;
-	struct proc_dir_entry *my_dir_entry;
-	struct tcp_seq_afinfo *my_afinfo = NULL;
+	struct proc_dir_entry *pde;
+	struct tcp_seq_afinfo *tcp_afinfo = NULL;
 	struct net *glb_net;
 
 	glb_net = get_net(&init_net);
 
-	my_dir_entry = glb_net->proc_net->subdir;
-
-	/*
-	 * Find TCP proc entry.
-	 */
+	/* Find TCP proc entry. */
+	pde = glb_net->proc_net->subdir;
 	do {
-		if (strncmp(my_dir_entry->name, "tcp", sizeof("tcp")) == 0) {
+		if (strncmp(pde->name, "tcp", sizeof("tcp")) == 0) {
 			got_tcp = 1;
 			break;
 		}
-		my_dir_entry = my_dir_entry->next;
-	} while (my_dir_entry != NULL);
+		pde = pde->next;
+	} while (pde);
 
 	if (!got_tcp) {
 		goto end;
 	}
 
-	my_afinfo = (struct tcp_seq_afinfo*)my_dir_entry->data;
+	tcp_afinfo = (struct tcp_seq_afinfo *) pde->data;
 
-	ret = is_addr_kernel_text((unsigned long)my_afinfo->seq_ops.show);
+	/* Check if the call show points in the kernel text area. */
+	ret = is_addr_kernel_text((unsigned long) tcp_afinfo->seq_ops.show);
 	if (!ret) {
-		/* Let check if is points to a LKM */
+		DMESG("TCP4 seq_ops show has been changed to %p",
+				tcp_afinfo->seq_ops.show);
+		/* Let check if is points to a LKM (kernel moduel). */
 		module_lock_list();
-		mod = module_get_from_addr((unsigned long)my_afinfo->seq_ops.show);
+		mod = module_get_from_addr((unsigned long) tcp_afinfo->seq_ops.show);
 		if (mod) {
-			DMESG("Module '%s' hijacked tcp4_seq_show."
-					" Probably hidding port from user space", mod->name);
+			DMESG("Module '%s' hijacked it. Probably hidding port(s)",
+					mod->name);
 			DMESG("Module arguments are '%s'", mod->args);
 			module_list_symbols(mod);
 			got_mod = 1;
 		} else {
 			DMESG("Can't find any module containing this addr. It's possible "
-					"that the module has been erased from the global module "
-					"list to hide his self.");
+					"that the module was deleted from the global module list");
 		}
 		module_unlock_list();
 	}
@@ -82,8 +81,8 @@ end:
 	put_net(&init_net);
 
 	if (!got_mod) {
-		DMESG("No tcp4 hijack detected");
+		DMESG("No TCP IPv4 hijack detected");
+	} else {
+		DMESG("TCP IPv4 hijack detection done");
 	}
-
-	DMESG("[+] TCP IPv4 hijack detection done");
 }
