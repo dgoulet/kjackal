@@ -79,6 +79,8 @@ void tcp4_hijack_detection(void)
 	}
 
 end:
+	put_net(&init_net);
+
 	if (!got_mod) {
 		DMESG("No tcp4 hijack detected");
 	}
