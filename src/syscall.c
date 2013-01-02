@@ -69,9 +69,7 @@ void syscall_hijack_detection(void)
 	for (i = 0; i < NR_syscalls; i++) {
 		syscall_addr = __sys_call_table_ptr[i];
 
-		/*
-		 * Is the syscall addr is in kernel text section.
-		 */
+		/* Is the syscall addr is in kernel text section. */
 		ret = is_addr_kernel_text(syscall_addr);
 		if (ret) {
 			/* Fine for now, continue. */
@@ -79,7 +77,7 @@ void syscall_hijack_detection(void)
 		}
 
 		got_hijack = 1;
-		DMESG("Possible syscall number %d hijacked at %p", i,
+		DMESG("Syscall number %d has been changed to %p", i,
 				(void *) syscall_addr);
 
 		/* Let check if is points to a LKM */
@@ -94,8 +92,8 @@ void syscall_hijack_detection(void)
 			mod = module_find_hidden_from_addr(syscall_addr);
 			if (!mod) {
 				DMESG("Can't find any module containing this addr. It's "
-						"possible that the module has been erased from the "
-						"global module list to hide his self.");
+						"possible that the module was deleted from the "
+						"global module list to hide its self.");
 			}
 		}
 		module_unlock_list();
@@ -103,10 +101,12 @@ void syscall_hijack_detection(void)
 
 	if (!got_hijack) {
 		DMESG("No syscall hijack detected");
+	} else {
+		DMESG("Syscall hijack detection done");
 	}
 
 end:
-	DMESG("[+] Syscall hijack detection done");
+	return;
 }
 
 /*
