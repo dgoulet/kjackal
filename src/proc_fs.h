@@ -20,6 +20,6 @@
 #ifndef KJACKAL_PROC_FS_H
 #define KJACKAL_PROC_FS_H
 
-void procfs_hijack_detection(void);
+void kj_procfs_hijack_detection(void);
 
 #endif /* KJACKAL_PROC_FS_H */

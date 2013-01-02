@@ -30,7 +30,7 @@
  * Check for seq_ops.show hijack normally used to hide port from user space
  * with netstat accessing /proc.
  */
-void tcp4_hijack_detection(void)
+void kj_tcp4_hijack_detection(void)
 {
 	int got_tcp = 0, got_mod = 0, ret;
 	struct module *mod;
@@ -57,24 +57,24 @@ void tcp4_hijack_detection(void)
 	tcp_afinfo = (struct tcp_seq_afinfo *) pde->data;
 
 	/* Check if the call show points in the kernel text area. */
-	ret = is_addr_kernel_text((unsigned long) tcp_afinfo->seq_ops.show);
+	ret = kj_is_addr_kernel_text((unsigned long) tcp_afinfo->seq_ops.show);
 	if (!ret) {
 		DMESG("TCP4 seq_ops show has been changed to %p",
 				tcp_afinfo->seq_ops.show);
 		/* Let check if is points to a LKM (kernel moduel). */
-		module_lock_list();
-		mod = module_get_from_addr((unsigned long) tcp_afinfo->seq_ops.show);
+		kj_module_lock_list();
+		mod = kj_module_get_from_addr((unsigned long) tcp_afinfo->seq_ops.show);
 		if (mod) {
 			DMESG("Module '%s' hijacked it. Probably hidding port(s)",
 					mod->name);
 			DMESG("Module arguments are '%s'", mod->args);
-			module_list_symbols(mod);
+			kj_module_list_symbols(mod);
 			got_mod = 1;
 		} else {
 			DMESG("Can't find any module containing this addr. It's possible "
 					"that the module was deleted from the global module list");
 		}
-		module_unlock_list();
+		kj_module_unlock_list();
 	}
 
 end:

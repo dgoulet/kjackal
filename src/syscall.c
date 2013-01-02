@@ -35,27 +35,35 @@
 #include "module.h"
 #include "syscall.h"
 
-#define SYSCALL_TABLE_INIT(void)        \
+#define KJ_SYSCALL_TABLE_INIT(void)        \
 	do {                                    \
 		if (__sys_call_table_ptr == NULL) {       \
-			syscall_init_table();           \
+			init_syscall_table();           \
 		}                                   \
 	} while (0);
 
 static unsigned long *__sys_call_table_ptr;
 
 /*
+ * Dynamically lookup syscall table address.
+ */
+static void init_syscall_table(void)
+{
+	__sys_call_table_ptr = kj_kernel_symbol_lookup("sys_call_table");
+}
+
+/*
  * Detect any syscall address from the global table that is outside kernel text
  * section.
  */
-void syscall_hijack_detection(void)
+void kj_syscall_hijack_detection(void)
 {
 	int i, ret, got_hijack = 0;
 	struct module *mod;
 	unsigned long syscall_addr;
 
 	/* Safety net */
-	SYSCALL_TABLE_INIT();
+	KJ_SYSCALL_TABLE_INIT();
 
 	if (__sys_call_table_ptr == NULL) {
 		DMESG("Unable to get sys_call_table address. Aborting");
@@ -70,7 +78,7 @@ void syscall_hijack_detection(void)
 		syscall_addr = __sys_call_table_ptr[i];
 
 		/* Is the syscall addr is in kernel text section. */
-		ret = is_addr_kernel_text(syscall_addr);
+		ret = kj_is_addr_kernel_text(syscall_addr);
 		if (ret) {
 			/* Fine for now, continue. */
 			continue;
@@ -81,22 +89,22 @@ void syscall_hijack_detection(void)
 				(void *) syscall_addr);
 
 		/* Let check if is points to a LKM */
-		module_lock_list();
-		mod = module_get_from_addr(syscall_addr);
+		kj_module_lock_list();
+		mod = kj_module_get_from_addr(syscall_addr);
 		if (mod) {
 			DMESG("Module '%s' controls it at %p", mod->name,
 					(void *) syscall_addr);
 			DMESG("Module arguments are '%s'", mod->args);
-			module_list_symbols(mod);
+			kj_module_list_symbols(mod);
 		} else {
-			mod = module_find_hidden_from_addr(syscall_addr);
+			mod = kj_module_find_hidden_from_addr(syscall_addr);
 			if (!mod) {
 				DMESG("Can't find any module containing this addr. It's "
 						"possible that the module was deleted from the "
 						"global module list to hide its self.");
 			}
 		}
-		module_unlock_list();
+		kj_module_unlock_list();
 	}
 
 	if (!got_hijack) {
@@ -107,12 +115,4 @@ void syscall_hijack_detection(void)
 
 end:
 	return;
-}
-
-/*
- * Dynamically lookup syscall table address.
- */
-void syscall_init_table(void)
-{
-	__sys_call_table_ptr = lookup_kernel_symbol("sys_call_table");
 }

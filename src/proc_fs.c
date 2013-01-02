@@ -28,7 +28,7 @@
 /*
  * Check for /proc readdir file operation hijack.
  */
-void procfs_hijack_detection(void)
+void kj_procfs_hijack_detection(void)
 {
 	int ret, got_mod = 0;
 	struct file *fp;
@@ -46,20 +46,20 @@ void procfs_hijack_detection(void)
 		goto error_fop;
 	}
 
-	ret = is_addr_kernel_text((unsigned long) fp->f_op->readdir);
+	ret = kj_is_addr_kernel_text((unsigned long) fp->f_op->readdir);
 	if (!ret) {
 		DMESG("/proc readdir was changed to %p", fp->f_op->readdir);
 
-		module_lock_list();
-		mod = module_get_from_addr((unsigned long) fp->f_op->readdir);
+		kj_module_lock_list();
+		mod = kj_module_get_from_addr((unsigned long) fp->f_op->readdir);
 		if (mod) {
 			DMESG("Module '%s' hijacked it. Probably hidding PID."
 					, mod->name);
 			DMESG("Module arguments are '%s'", mod->args);
-			module_list_symbols(mod);
+			kj_module_list_symbols(mod);
 			got_mod = 1;
 		}
-		module_unlock_list();
+		kj_module_unlock_list();
 	}
 
 	if (!got_mod) {

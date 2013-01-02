@@ -29,19 +29,9 @@
 #include "module.h"
 
 static const char *module_memdump_path= "/tmp/rootkit-module.dump";
-
 static struct kset *module_kset_sym;
 
-#define MODULE_INIT_KSET()                                          \
-	do {                                                            \
-		if (!module_kset_sym) {                                     \
-			module_kset_sym = lookup_kernel_symbol("module_kset");  \
-		}                                                           \
-	} while (0);
-
-#define module_to_kobject(n) container_of(n, struct module_kobject, kobj)
-
-struct module *module_find_hidden_from_addr(unsigned long addr)
+struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 {
 	int end = 0;
 	struct module_kobject *mk;
@@ -49,7 +39,7 @@ struct module *module_find_hidden_from_addr(unsigned long addr)
 	const char *name;
 
 	/* Get modules kset */
-	MODULE_INIT_KSET();
+	KJ_MODULE_INIT_KSET();
 
 	if (!module_kset_sym) {
 		DMESG("Unable to find module_kset. Skipping hidden module lookup");
@@ -74,7 +64,7 @@ struct module *module_find_hidden_from_addr(unsigned long addr)
 			end++;
 		}
 
-		mk = module_to_kobject(k);
+		mk = KJ_MODULE_TO_KOBJECT(k);
 		if (!mk || !mk->mod) {
 			continue;
 		}
@@ -88,7 +78,7 @@ struct module *module_find_hidden_from_addr(unsigned long addr)
 			DMESG("Hidden module found: '%s'", mk->mod->name);
 			DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
 					mk->mod->module_core + mk->mod->core_size);
-			module_list_symbols(mk->mod);
+			kj_module_list_symbols(mk->mod);
 			return mk->mod;
 		}
 	}
@@ -96,7 +86,7 @@ struct module *module_find_hidden_from_addr(unsigned long addr)
 	return NULL;
 }
 
-void module_find_all_hidden(void)
+void kj_module_find_all_hidden(void)
 {
 	int end = 0;
 	struct module_kobject *mk;
@@ -105,7 +95,7 @@ void module_find_all_hidden(void)
 	const char *name;
 
 	/* Get modules kset */
-	MODULE_INIT_KSET();
+	KJ_MODULE_INIT_KSET();
 
 	if (!module_kset_sym) {
 		DMESG("Unable to find module_kset. Skipping hidden module lookup");
@@ -130,9 +120,9 @@ void module_find_all_hidden(void)
 			end++;
 		}
 
-		mk = module_to_kobject(k);
+		mk = KJ_MODULE_TO_KOBJECT(k);
 		if (mk && mk->mod && mk->mod->name) {
-			module_lock_list();
+			kj_module_lock_list();
 			mod = find_module(mk->mod->name);
 			if (!mod) {
 				/*
@@ -142,9 +132,9 @@ void module_find_all_hidden(void)
 				DMESG("Hidden module found: '%s'", mk->mod->name);
 				DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
 						mk->mod->module_core + mk->mod->core_size);
-				module_list_symbols(mk->mod);
+				kj_module_list_symbols(mk->mod);
 			}
-			module_unlock_list();
+			kj_module_unlock_list();
 		}
 	}
 }
@@ -152,13 +142,13 @@ void module_find_all_hidden(void)
 /*
  * List ELF symbol of the module.
  */
-void module_list_symbols(struct module *mod)
+void kj_module_list_symbols(struct module *mod)
 {
 	int i;
 
 	DMESG("%d internal symbol(s) found", mod->num_symtab);
 
-	printk("rootkit: ");
+	printk("kjackal: [rootkit] ");
 	for (i = 1; i < mod->num_symtab; i++) {
 		printk("%s ", &mod->strtab[mod->symtab[i].st_name]);
 	}
@@ -169,7 +159,7 @@ void module_list_symbols(struct module *mod)
  * __module_address requires us to lock the module mutex or disable premption.
  * Use module_lock_list() for that.
  */
-struct module *module_get_from_addr(unsigned long addr)
+struct module *kj_module_get_from_addr(unsigned long addr)
 {
 	return  __module_address(addr);
 }
@@ -177,7 +167,7 @@ struct module *module_get_from_addr(unsigned long addr)
 /*
  * Dump memory of module to filesystem.
  */
-void module_dump_memory(struct module *mod)
+void kj_module_dump_memory(struct module *mod)
 {
 	mm_segment_t fs;
 	u32 bytes_written;

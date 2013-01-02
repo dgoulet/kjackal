@@ -38,7 +38,7 @@ static int __init kjackal_init(void)
 	 * every address to see if it is in the core kernel text section where it's
 	 * suppose to be. If yes, we'll check for a module "hosting" this address.
 	 */
-	syscall_hijack_detection();
+	kj_syscall_hijack_detection();
 
 	/*
 	 * TCP IPv4 seq_ops hijack detection.
@@ -46,20 +46,20 @@ static int __init kjackal_init(void)
 	 * This technique is often used to hide ports or any sensitive information.
 	 * The 'seq_ops.show' is checked here to the core kernel text addr. space.
 	 */
-	tcp4_hijack_detection();
+	kj_tcp4_hijack_detection();
 
 	/*
 	 * /proc filesystem hijack detection.
 	 *
 	 * The readdir ops of /proc checked.
 	 */
-	procfs_hijack_detection();
+	kj_procfs_hijack_detection();
 
 	/*
 	 * Finally search for all *hidden* module which tries to remove them self
 	 * from existence. kjackal still have some card up his sleeve ;).
 	 */
-	module_find_all_hidden();
+	kj_module_find_all_hidden();
 
 	return 0;
 }

@@ -24,6 +24,6 @@
  * Check for seq_ops.show hijack normally used to hide port from user space
  * with netstat accessing /proc.
  */
-void tcp4_hijack_detection(void);
+void kj_tcp4_hijack_detection(void);
 
 #endif /* KJACKAL_TCP4_H */

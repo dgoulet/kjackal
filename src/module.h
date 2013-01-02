@@ -22,20 +22,29 @@
 
 #include <linux/module.h>
 
-static inline void module_unlock_list(void)
+#define KJ_MODULE_INIT_KSET()                                          \
+	do {                                                               \
+		if (!module_kset_sym) {                                        \
+			module_kset_sym = kj_kernel_symbol_lookup("module_kset");  \
+		}                                                              \
+	} while (0);
+
+#define KJ_MODULE_TO_KOBJECT(n) container_of(n, struct module_kobject, kobj)
+
+static inline void kj_module_unlock_list(void)
 {
 	mutex_lock(&module_mutex);
 }
 
-static inline void module_lock_list(void)
+static inline void kj_module_lock_list(void)
 {
 	mutex_unlock(&module_mutex);
 }
 
-void module_list_symbols(struct module *mod);
-struct module *module_get_from_addr(unsigned long addr);
+void kj_module_list_symbols(struct module *mod);
+struct module *kj_module_get_from_addr(unsigned long addr);
 
-void module_find_all_hidden(void);
-struct module *module_find_hidden_from_addr(unsigned long addr);
+void kj_module_find_all_hidden(void);
+struct module *kj_module_find_hidden_from_addr(unsigned long addr);
 
 #endif /* KJACKAL_MODULE_H */

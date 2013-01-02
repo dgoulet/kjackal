@@ -19,8 +19,6 @@
 #ifndef KJACKAL_SYSCALL_H
 #define KJACKAL_SYSCALL_H
 
-void syscall_hijack_detection(void);
-
-void syscall_init_table(void);
+void kj_syscall_hijack_detection(void);
 
 #endif /* KJACKAL_SYSCALL_H */

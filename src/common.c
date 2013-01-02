@@ -33,14 +33,14 @@ static int (*__kernel_text_address_sym)(unsigned long addr);
  */
 #if defined(CONFIG_KALLSYMS) && defined(CONFIG_KALLSYMS_ALL) && \
 	(LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 32))
-void *lookup_kernel_symbol(const char *name)
+void *kj_kernel_symbol_lookup(const char *name)
 {
 	return (void *) kallsyms_lookup_name(name);
 }
 
 #else /* CONFIG_KALLSYMS ... */
 
-void *lookup_kernel_symbol(const char *name)
+void *kj_kernel_symbol_lookup(const char *name)
 {
 	void *sym = NULL;
 
@@ -67,10 +67,11 @@ void *lookup_kernel_symbol(const char *name)
  *
  * Return 1 if yes, else 0.
  */
-int is_addr_kernel_text(unsigned long addr)
+int kj_is_addr_kernel_text(unsigned long addr)
 {
 	if (!__kernel_text_address_sym) {
-		__kernel_text_address_sym = lookup_kernel_symbol("core_kernel_text");
+		__kernel_text_address_sym =
+			kj_kernel_symbol_lookup("core_kernel_text");
 	}
 
 	if (__kernel_text_address_sym) {

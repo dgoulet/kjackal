@@ -22,8 +22,8 @@
 
 #define DMESG(fmt, args...) printk("kjackal: " fmt "\n", ## args);
 
-int is_addr_kernel_text(unsigned long addr);
+int kj_is_addr_kernel_text(unsigned long addr);
 
-void *lookup_kernel_symbol(const char *name);
+void *kj_kernel_symbol_lookup(const char *name);
 
 #endif /* KJACKAL_COMMON_H */
