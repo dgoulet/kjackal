@@ -42,7 +42,7 @@ struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 	KJ_MODULE_INIT_KSET();
 
 	if (!module_kset_sym) {
-		DMESG("Unable to find module_kset. Skipping hidden module lookup");
+		KJ_DMESG("Unable to find module_kset. Skipping hidden module lookup");
 		return NULL;
 	}
 
@@ -75,8 +75,8 @@ struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 			 * We have an allocated module name but no module found in the
 			 * global list. We got our hidden module! ;).
 			 */
-			DMESG("Hidden module found: '%s'", mk->mod->name);
-			DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
+			KJ_DMESG("Hidden module found: '%s'", mk->mod->name);
+			KJ_DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
 					mk->mod->module_core + mk->mod->core_size);
 			kj_module_list_symbols(mk->mod);
 			return mk->mod;
@@ -98,7 +98,7 @@ void kj_module_find_all_hidden(void)
 	KJ_MODULE_INIT_KSET();
 
 	if (!module_kset_sym) {
-		DMESG("Unable to find module_kset. Skipping hidden module lookup");
+		KJ_DMESG("Unable to find module_kset. Skipping hidden module lookup");
 		return;
 	}
 
@@ -129,8 +129,8 @@ void kj_module_find_all_hidden(void)
 				 * We have an allocated module name but no module found in the
 				 * global list. We got our hidden module! ;).
 				 */
-				DMESG("Hidden module found: '%s'", mk->mod->name);
-				DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
+				KJ_DMESG("Hidden module found: '%s'", mk->mod->name);
+				KJ_DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
 						mk->mod->module_core + mk->mod->core_size);
 				kj_module_list_symbols(mk->mod);
 			}
@@ -146,7 +146,7 @@ void kj_module_list_symbols(struct module *mod)
 {
 	int i;
 
-	DMESG("%d internal symbol(s) found", mod->num_symtab);
+	KJ_DMESG("%d internal symbol(s) found", mod->num_symtab);
 
 	printk("kjackal: [rootkit] ");
 	for (i = 1; i < mod->num_symtab; i++) {
@@ -176,7 +176,7 @@ void kj_module_dump_memory(struct module *mod)
 	/* Open memory dump file */
 	fp = filp_open(module_memdump_path, O_WRONLY | O_CREAT, S_IRUSR);
 	if (IS_ERR(fp) || fp->f_op == NULL) {
-		DMESG("[Error]: fail to open %s", module_memdump_path);
+		KJ_DMESG("[Error]: fail to open %s", module_memdump_path);
 		goto error_open;
 	}
 
@@ -187,7 +187,7 @@ void kj_module_dump_memory(struct module *mod)
 			&(fp->f_pos));
 	set_fs(fs);
 	if (bytes_written != mod->init_size) {
-		DMESG("[Error]: init section write failed, wrote %d bytes expected %d",
+		KJ_DMESG("[Error]: init section write failed, wrote %d bytes expected %d",
 				bytes_written, mod->init_size);
 		goto error_write;
 	}
@@ -199,7 +199,7 @@ void kj_module_dump_memory(struct module *mod)
 			&(fp->f_pos));
 	set_fs(fs);
 	if (bytes_written != mod->core_size) {
-		DMESG("[Error]: core section write failed, wrote %d bytes expected %d",
+		KJ_DMESG("[Error]: core section write failed, wrote %d bytes expected %d",
 				bytes_written, mod->core_size);
 		goto error_write;
 	}

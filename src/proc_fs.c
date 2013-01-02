@@ -37,25 +37,25 @@ void kj_procfs_hijack_detection(void)
 	/* Open /proc */
 	fp = filp_open("/proc", O_RDONLY, S_IRUSR);
 	if (IS_ERR(fp)) {
-		DMESG("[Error]: fail to open /proc");
+		KJ_DMESG("[Error]: fail to open /proc");
 		goto error_open;
 	}
 
 	if (!fp->f_op) {
-		DMESG("[Warn]: /proc file pointer does not have operations");
+		KJ_DMESG("[Warn]: /proc file pointer does not have operations");
 		goto error_fop;
 	}
 
 	ret = kj_is_addr_kernel_text((unsigned long) fp->f_op->readdir);
 	if (!ret) {
-		DMESG("/proc readdir was changed to %p", fp->f_op->readdir);
+		KJ_DMESG("/proc readdir was changed to %p", fp->f_op->readdir);
 
 		kj_module_lock_list();
 		mod = kj_module_get_from_addr((unsigned long) fp->f_op->readdir);
 		if (mod) {
-			DMESG("Module '%s' hijacked it. Probably hidding PID."
+			KJ_DMESG("Module '%s' hijacked it. Probably hidding PID."
 					, mod->name);
-			DMESG("Module arguments are '%s'", mod->args);
+			KJ_DMESG("Module arguments are '%s'", mod->args);
 			kj_module_list_symbols(mod);
 			got_mod = 1;
 		}
@@ -63,9 +63,9 @@ void kj_procfs_hijack_detection(void)
 	}
 
 	if (!got_mod) {
-		DMESG("No /proc readdir hijack detected");
+		KJ_DMESG("No /proc readdir hijack detected");
 	} else {
-		DMESG("/proc readdir hijack detection done");
+		KJ_DMESG("/proc readdir hijack detection done");
 	}
 
 error_fop:

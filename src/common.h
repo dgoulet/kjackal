@@ -20,7 +20,7 @@
 #ifndef KJACKAL_COMMON_H
 #define KJACKAL_COMMON_H
 
-#define DMESG(fmt, args...) printk("kjackal: " fmt "\n", ## args);
+#define KJ_DMESG(fmt, args...) printk("kjackal: " fmt "\n", ## args);
 
 int kj_is_addr_kernel_text(unsigned long addr);
 

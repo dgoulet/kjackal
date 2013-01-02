@@ -69,7 +69,7 @@ static int __init kjackal_init(void)
  */
 static void __exit kjackal_exit(void)
 {
-	DMESG("Truie truie");
+	KJ_DMESG("Truie truie");
 }
 
 module_init(kjackal_init);

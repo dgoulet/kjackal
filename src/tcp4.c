@@ -59,19 +59,19 @@ void kj_tcp4_hijack_detection(void)
 	/* Check if the call show points in the kernel text area. */
 	ret = kj_is_addr_kernel_text((unsigned long) tcp_afinfo->seq_ops.show);
 	if (!ret) {
-		DMESG("TCP4 seq_ops show has been changed to %p",
+		KJ_DMESG("TCP4 seq_ops show has been changed to %p",
 				tcp_afinfo->seq_ops.show);
 		/* Let check if is points to a LKM (kernel moduel). */
 		kj_module_lock_list();
 		mod = kj_module_get_from_addr((unsigned long) tcp_afinfo->seq_ops.show);
 		if (mod) {
-			DMESG("Module '%s' hijacked it. Probably hidding port(s)",
+			KJ_DMESG("Module '%s' hijacked it. Probably hidding port(s)",
 					mod->name);
-			DMESG("Module arguments are '%s'", mod->args);
+			KJ_DMESG("Module arguments are '%s'", mod->args);
 			kj_module_list_symbols(mod);
 			got_mod = 1;
 		} else {
-			DMESG("Can't find any module containing this addr. It's possible "
+			KJ_DMESG("Can't find any module containing this addr. It's possible "
 					"that the module was deleted from the global module list");
 		}
 		kj_module_unlock_list();
@@ -81,8 +81,8 @@ end:
 	put_net(&init_net);
 
 	if (!got_mod) {
-		DMESG("No TCP IPv4 hijack detected");
+		KJ_DMESG("No TCP IPv4 hijack detected");
 	} else {
-		DMESG("TCP IPv4 hijack detection done");
+		KJ_DMESG("TCP IPv4 hijack detection done");
 	}
 }

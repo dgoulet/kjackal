@@ -66,7 +66,7 @@ void kj_syscall_hijack_detection(void)
 	KJ_SYSCALL_TABLE_INIT();
 
 	if (__sys_call_table_ptr == NULL) {
-		DMESG("Unable to get sys_call_table address. Aborting");
+		KJ_DMESG("Unable to get sys_call_table address. Aborting");
 		goto end;
 	}
 
@@ -85,21 +85,21 @@ void kj_syscall_hijack_detection(void)
 		}
 
 		got_hijack = 1;
-		DMESG("Syscall number %d has been changed to %p", i,
+		KJ_DMESG("Syscall number %d has been changed to %p", i,
 				(void *) syscall_addr);
 
 		/* Let check if is points to a LKM */
 		kj_module_lock_list();
 		mod = kj_module_get_from_addr(syscall_addr);
 		if (mod) {
-			DMESG("Module '%s' controls it at %p", mod->name,
+			KJ_DMESG("Module '%s' controls it at %p", mod->name,
 					(void *) syscall_addr);
-			DMESG("Module arguments are '%s'", mod->args);
+			KJ_DMESG("Module arguments are '%s'", mod->args);
 			kj_module_list_symbols(mod);
 		} else {
 			mod = kj_module_find_hidden_from_addr(syscall_addr);
 			if (!mod) {
-				DMESG("Can't find any module containing this addr. It's "
+				KJ_DMESG("Can't find any module containing this addr. It's "
 						"possible that the module was deleted from the "
 						"global module list to hide its self.");
 			}
@@ -108,9 +108,9 @@ void kj_syscall_hijack_detection(void)
 	}
 
 	if (!got_hijack) {
-		DMESG("No syscall hijack detected");
+		KJ_DMESG("No syscall hijack detected");
 	} else {
-		DMESG("Syscall hijack detection done");
+		KJ_DMESG("Syscall hijack detection done");
 	}
 
 end:
