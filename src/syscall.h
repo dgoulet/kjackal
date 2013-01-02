@@ -16,11 +16,11 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _SYSCALL_H
-#define _SYSCALL_H
+#ifndef KJACKAL_SYSCALL_H
+#define KJACKAL_SYSCALL_H
 
 void syscall_hijack_detection(void);
 
 void syscall_init_table(void);
 
-#endif /* _SYSCALL_H */
+#endif /* KJACKAL_SYSCALL_H */

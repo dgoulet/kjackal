@@ -17,8 +17,8 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef _MODULE_H
-#define _MODULE_H
+#ifndef KJACKAL_MODULE_H
+#define KJACKAL_MODULE_H
 
 #include <linux/module.h>
 
@@ -38,4 +38,4 @@ struct module *module_get_from_addr(unsigned long addr);
 void module_find_all_hidden(void);
 struct module *module_find_hidden_from_addr(unsigned long addr);
 
-#endif /* _MODULE_H */
+#endif /* KJACKAL_MODULE_H */

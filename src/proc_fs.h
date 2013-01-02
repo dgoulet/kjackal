@@ -17,4 +17,9 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef KJACKAL_PROC_FS_H
+#define KJACKAL_PROC_FS_H
+
 void procfs_hijack_detection(void);
+
+#endif /* KJACKAL_PROC_FS_H */

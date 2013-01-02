@@ -17,8 +17,8 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef KJACKAL_COMMON_H
+#define KJACKAL_COMMON_H
 
 #define DMESG(fmt, args...) printk("kjackal: " fmt "\n", ## args);
 
@@ -26,4 +26,4 @@ int is_addr_kernel_text(unsigned long addr);
 
 void *lookup_kernel_symbol(const char *name);
 
-#endif /* _COMMON_H */
+#endif /* KJACKAL_COMMON_H */

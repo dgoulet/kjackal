@@ -17,8 +17,8 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef _TCP4_H
-#define _TCP4_H
+#ifndef KJACKAL_TCP4_H
+#define KJACKAL_TCP4_H
 
 /*
  * Check for seq_ops.show hijack normally used to hide port from user space
@@ -26,4 +26,4 @@
  */
 void tcp4_hijack_detection(void);
 
-#endif /* _TCP4_H */
+#endif /* KJACKAL_TCP4_H */
