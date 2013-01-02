@@ -36,18 +36,25 @@ void procfs_hijack_detection(void)
 
 	/* Open /proc */
 	fp = filp_open("/proc", O_RDONLY, S_IRUSR);
-	if (IS_ERR(fp) | !fp->f_op) {
+	if (IS_ERR(fp)) {
 		DMESG("[Error]: fail to open /proc");
 		goto error_open;
 	}
 
+	if (!fp->f_op) {
+		DMESG("[Warn]: /proc file pointer does not have operations");
+		goto error_fop;
+	}
+
 	ret = is_addr_kernel_text((unsigned long) fp->f_op->readdir);
 	if (ret) {
+		DMESG("/proc readdir was changed to %p", fp->f_op->readdir);
+
 		module_lock_list();
-		mod = module_get_from_addr((unsigned long)fp->f_op->readdir);
+		mod = module_get_from_addr((unsigned long) fp->f_op->readdir);
 		if (mod) {
-			DMESG("Module '%s' /proc readdir."
-					" Probably hidding PID from user space", mod->name);
+			DMESG("Module '%s' hijacked it. Probably hidding PID."
+					, mod->name);
 			DMESG("Module arguments are '%s'", mod->args);
 			module_list_symbols(mod);
 			got_mod = 1;
@@ -55,14 +62,14 @@ void procfs_hijack_detection(void)
 		module_unlock_list();
 	}
 
-	filp_close(fp, NULL);
-
 	if (!got_mod) {
 		DMESG("No /proc readdir hijack detected");
+	} else {
+		DMESG("/proc readdir hijack detection done");
 	}
 
-	DMESG("[+] /proc hijack detection done");
-
+error_fop:
+	filp_close(fp, NULL);
 error_open:
 	return;
 }
