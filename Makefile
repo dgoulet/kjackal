@@ -9,7 +9,12 @@ PWD := $(shell pwd)
 
 obj-m += kjackal.o
 kjackal-objs := $(SRCDIR)/common.o $(SRCDIR)/module.o $(SRCDIR)/syscall.o \
-				$(SRCDIR)/tcp4.o $(SRCDIR)/proc_fs.o $(SRCDIR)/init.o
+				$(SRCDIR)/proc_fs.o $(SRCDIR)/init.o
+
+# Add tcp4 detection module for kernel <= 3.9.x
+kjackal-objs += $(shell \
+	if [ $(VERSION) -le 3 -a $(PATCHLEVEL) -le 9 -a $(SUBLEVEL) -le 11 ] ; then \
+	echo "$(SRCDIR)/tcp4.o"; fi;)
 
 SYM_MOD_KSET=$(shell grep ' module_kset' $(SYSMAP) | awk '{print $$1}')
 SYM_SYSCALL_TABLE=$(shell grep ' sys_call_table' $(SYSMAP) | awk '{print $$1}')

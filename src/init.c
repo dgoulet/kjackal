@@ -19,6 +19,8 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include <linux/version.h>
+
 #include "common.h"
 #include "proc_fs.h"
 #include "syscall.h"
@@ -40,6 +42,7 @@ static int __init kjackal_init(void)
 	 */
 	kj_syscall_hijack_detection();
 
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3,9,11)
 	/*
 	 * TCP IPv4 seq_ops hijack detection.
 	 *
@@ -47,6 +50,7 @@ static int __init kjackal_init(void)
 	 * The 'seq_ops.show' is checked here to the core kernel text addr. space.
 	 */
 	kj_tcp4_hijack_detection();
+#endif
 
 	/*
 	 * /proc filesystem hijack detection.
