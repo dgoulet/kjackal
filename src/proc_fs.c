@@ -26,7 +26,7 @@
 #include "proc_fs.h"
 
 /*
- * Check for /proc readdir file operation hijack.
+ * Check for /proc iterate file operation hijack.
  */
 void kj_procfs_hijack_detection(void)
 {
@@ -46,12 +46,12 @@ void kj_procfs_hijack_detection(void)
 		goto error_fop;
 	}
 
-	ret = kj_is_addr_kernel_text((unsigned long) fp->f_op->readdir);
+	ret = kj_is_addr_kernel_text((unsigned long) fp->f_op->iterate);
 	if (!ret) {
-		KJ_DMESG("/proc readdir was changed to %p", fp->f_op->readdir);
+		KJ_DMESG("/proc iterate was changed to %p", fp->f_op->iterate);
 
 		kj_module_lock_list();
-		mod = kj_module_get_from_addr((unsigned long) fp->f_op->readdir);
+		mod = kj_module_get_from_addr((unsigned long) fp->f_op->iterate);
 		if (mod) {
 			KJ_DMESG("Module '%s' hijacked it. Probably hidding PID."
 					, mod->name);
@@ -63,9 +63,9 @@ void kj_procfs_hijack_detection(void)
 	}
 
 	if (!got_mod) {
-		KJ_DMESG("No /proc readdir hijack detected");
+		KJ_DMESG("No /proc iterate hijack detected");
 	} else {
-		KJ_DMESG("/proc readdir hijack detection done");
+		KJ_DMESG("/proc iterate hijack detection done");
 	}
 
 error_fop:

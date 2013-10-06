@@ -3,6 +3,7 @@
 *.cmd
 *.mod.c
 *.o
+*.signed
 
 Module.symvers
 modules.order

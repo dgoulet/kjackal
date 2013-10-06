@@ -19,7 +19,6 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <net/net_namespace.h>
 #include <net/tcp.h>
 
 #include "common.h"
