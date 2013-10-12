@@ -19,18 +19,17 @@
  * Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <linux/proc_fs.h>
-
 #include "common.h"
 #include "module.h"
 #include "proc_fs.h"
 
 /*
- * Check for /proc iterate file operation hijack.
+ * Check for /proc read dir file operation hijack.
  */
 void kj_procfs_hijack_detection(void)
 {
 	int ret, got_mod = 0;
+	unsigned long fop_ptr;
 	struct file *fp;
 	struct module *mod;
 
@@ -46,12 +45,14 @@ void kj_procfs_hijack_detection(void)
 		goto error_fop;
 	}
 
-	ret = kj_is_addr_kernel_text((unsigned long) fp->f_op->iterate);
+	fop_ptr = kj_get_fop_ptr(fp);
+
+	ret = kj_is_addr_kernel_text(fop_ptr);
 	if (!ret) {
-		KJ_DMESG("/proc iterate was changed to %p", fp->f_op->iterate);
+		KJ_DMESG("/proc read dir was changed to %lx", fop_ptr);
 
 		kj_module_lock_list();
-		mod = kj_module_get_from_addr((unsigned long) fp->f_op->iterate);
+		mod = kj_module_get_from_addr(fop_ptr);
 		if (mod) {
 			KJ_DMESG("Module '%s' hijacked it. Probably hidding PID."
 					, mod->name);
@@ -63,9 +64,9 @@ void kj_procfs_hijack_detection(void)
 	}
 
 	if (!got_mod) {
-		KJ_DMESG("No /proc iterate hijack detected");
+		KJ_DMESG("No /proc read dir hijack detected");
 	} else {
-		KJ_DMESG("/proc iterate hijack detection done");
+		KJ_DMESG("/proc read dir hijack detection done");
 	}
 
 error_fop:

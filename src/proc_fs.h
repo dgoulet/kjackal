@@ -20,6 +20,26 @@
 #ifndef KJACKAL_PROC_FS_H
 #define KJACKAL_PROC_FS_H
 
+#include <linux/proc_fs.h>
+#include <linux/version.h>
+
 void kj_procfs_hijack_detection(void);
+
+/*
+ * In kernel 3.11.x and later, readdir() has been changed to iterate().
+ */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
+static inline
+unsigned long kj_get_fop_ptr(struct file *fp)
+{
+	return (unsigned long) fp->f_op->readdir;
+}
+#else
+static inline
+unsigned long kj_get_fop_ptr(struct file *fp)
+{
+	return (unsigned long) fp->f_op->iterate;
+}
+#endif	/* LINUX_VERSION_CODE < 3.10.11 */
 
 #endif /* KJACKAL_PROC_FS_H */
