@@ -22,7 +22,7 @@ rootkit AV or any IPS bimbo-blabla system. The purpose of kjackal is to quickly
 scan the Linux kernel for rootkit(s).
 
 So commonly, a kernel module rootkit, once loaded, will hijack the syscall
-table, the proc fileystem (to hide itself) and tcp4 operations to hide
+table, the proc fileystem (to hide itself) and TCP4 operations to hide
 backdoors' port.
 
 Kjackal uses multiple methods to find hidden modules. Here is the list:
@@ -31,25 +31,25 @@ Kjackal uses multiple methods to find hidden modules. Here is the list:
 
 The primary technique is to iterate over the syscall table and test
 every address to see if it is in the core kernel text section where it's
-suppose to be. If yes, we'll check for a module "hosting" this address.
+supposed to be. If yes, we'll check for a module "hosting" this address.
 
 2) TCP IPv4 seq_ops hijack detection.
 
 This technique is often used to hide ports or any sensitive information.
-The 'seq_ops.show' is checked here to the core kernel text addr. space.
+The 'seq_ops.show' is checked here to the core kernel text address space.
 
 3) /proc filesystem hijack detection.
 
 Check the readdir ops of /proc.
 
-4) Search for hidden module
+4) Search for hidden modules
 
-Search for all *hidden* module which tries to remove them self from existence.
-kjackal still have some card up his sleeve ;) to get them.
+Search for each *hidden* module which tries to remove itself from existence.
+kjackal still has some card up his sleeve ;) to get them.
 
 REQUIREMENTS:
 
-Tested on 2.6.32 up to 3.8.8 However, it might work for older kernel. Please
+Tested on 2.6.32 up to 3.8.8 However, it might work for an older kernel. Please
 report if you succeed.
 
 - Linux Kernel Headers 2.6.32 or later
@@ -74,7 +74,7 @@ Kjackal prints the report in dmesg.
 
 TESTS:
 
-The tests/ directory contains three simple kernel module to test kjackal.
+The tests/ directory contains three simple kernel modules to test kjackal.
 Please read carefully the comments in the .c file before loading one of them.
 
 WHAT'S NEXT:
