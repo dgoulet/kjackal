@@ -20,8 +20,11 @@
 #ifndef KJACKAL_TCP4_H
 #define KJACKAL_TCP4_H
 
+#include <linux/version.h>
+
 #include <net/net_namespace.h>
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
 /*
  * XXX: Since kernel 3.10.0, this structure became internal to the kernel thus
  * copying it here so we can access attributes.
@@ -46,6 +49,7 @@ struct proc_dir_entry {
 	u8 namelen;
 	char name[];
 };
+#endif /* LINUX_VERSION_CODE */
 
 void kj_tcp4_hijack_detection(void);
 
