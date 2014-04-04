@@ -116,6 +116,7 @@ void kj_module_find_all_hidden(void)
 	 */
 	list_for_each_entry(k, &module_kset_sym->list, entry) {
 		name = kobject_name(k);
+		KJ_DMESG("Name: '%s'", name);
 		if (!name) {
 			/*
 			 * For some reason, we have to detect the end of the list or it
