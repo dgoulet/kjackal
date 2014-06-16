@@ -49,8 +49,8 @@ kjackal still has some card up his sleeve ;) to get them.
 
 REQUIREMENTS:
 
-Tested on 2.6.32 up to 3.8.8 However, it might work for an older kernel. Please
-report if you succeed.
+Tested on 2.6.32 up to 3.15.0 However, it might work for an older kernel.
+Please report if you succeed.
 
 - Linux Kernel Headers 2.6.32 or later
 
