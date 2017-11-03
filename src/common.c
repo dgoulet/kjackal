@@ -54,11 +54,11 @@ void *kj_kernel_symbol_lookup(const char *name)
 	 * DO NOT CHANGE this arbitrarily unles you know what you are doing.
 	 */
 	if (strcmp(name, KJ_SYSCALL_TABLE_SYM) == 0) {
-		sym = (void*)0xMARKER_SYS_CALL_TABLE;
+		sym = (void*)0x0;
 	} else if (strcmp(name, KJ_MODULE_KSET_SYM) == 0) {
-		sym = (void*)0xMARKER_MODULE_KSET;
+		sym = (void*)0x0;
 	} else if (strcmp(name, KJ_CORE_KERN_TEXT_SYM) == 0) {
-		sym = (void*)0xMARKER_CORE_KERNEL_TEXT;
+		sym = (void*)0x0;
 	}
 
 	return sym;

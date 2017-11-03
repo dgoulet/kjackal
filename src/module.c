@@ -24,6 +24,7 @@
 #include <linux/kobject.h>
 #include <linux/list.h>
 #include <linux/module.h>
+#include <linux/sched.h>
 
 #include "common.h"
 #include "module.h"
@@ -73,15 +74,15 @@ struct module *kj_module_find_hidden_from_addr(unsigned long addr)
 			continue;
 		}
 
-		if (addr >= (unsigned long) mk->mod->module_core &&
-				addr < (unsigned long) (mk->mod->module_core + mk->mod->core_size)) {
+		if (addr >= (unsigned long) mk->mod->core_layout.base &&
+				addr < (unsigned long) (mk->mod->core_layout.base + mk->mod->core_layout.size)) {
 			/*
 			 * We have an allocated module name but no module found in the
 			 * global list. We got our hidden module! ;).
 			 */
 			KJ_DMESG("Hidden module found: '%s'", mk->mod->name);
-			KJ_DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
-					mk->mod->module_core + mk->mod->core_size);
+			KJ_DMESG("Address space from 0x%p to 0x%p", mk->mod->core_layout.base,
+					mk->mod->core_layout.base + mk->mod->core_layout.size);
 			kj_module_list_symbols(mk->mod);
 			return mk->mod;
 		}
@@ -137,8 +138,8 @@ void kj_module_find_all_hidden(void)
 				 * global list. We got our hidden module! ;).
 				 */
 				KJ_DMESG("Hidden module found: '%s'", mk->mod->name);
-				KJ_DMESG("Address space from 0x%p to 0x%p", mk->mod->module_core,
-						mk->mod->module_core + mk->mod->core_size);
+				KJ_DMESG("Address space from 0x%p to 0x%p", mk->mod->core_layout.base,
+						mk->mod->core_layout.base + mk->mod->core_layout.size);
 				kj_module_list_symbols(mk->mod);
 			}
 			kj_module_unlock_list();
@@ -153,11 +154,11 @@ void kj_module_list_symbols(struct module *mod)
 {
 	int i;
 
-	KJ_DMESG("%d internal symbol(s) found", mod->num_symtab);
+	KJ_DMESG("%d internal symbol(s) found", mod->kallsyms->num_symtab);
 
 	printk("kjackal: [rootkit] ");
-	for (i = 1; i < mod->num_symtab; i++) {
-		printk("%s ", &mod->strtab[mod->symtab[i].st_name]);
+	for (i = 1; i < mod->kallsyms->num_symtab; i++) {
+		printk("%s ", &mod->kallsyms->strtab[mod->kallsyms->symtab[i].st_name]);
 	}
 	printk("\n");
 }
@@ -190,24 +191,24 @@ void kj_module_dump_memory(struct module *mod)
 	/* Write module init section to file */
 	fs = get_fs();
 	set_fs(get_ds());
-	bytes_written = fp->f_op->write(fp, mod->module_init, mod->init_size,
+	bytes_written = fp->f_op->write(fp, mod->init_layout.base, mod->init_layout.size,
 			&(fp->f_pos));
 	set_fs(fs);
-	if (bytes_written != mod->init_size) {
+	if (bytes_written != mod->init_layout.size) {
 		KJ_DMESG("[Error]: init section write failed, wrote %d bytes expected %d",
-				bytes_written, mod->init_size);
+				bytes_written, mod->init_layout.size);
 		goto error_write;
 	}
 
 	/* Write module core section fo file */
 	fs = get_fs();
 	set_fs(get_ds());
-	bytes_written = fp->f_op->write(fp, mod->module_core, mod->core_size,
+	bytes_written = fp->f_op->write(fp, mod->core_layout.base, mod->core_layout.size,
 			&(fp->f_pos));
 	set_fs(fs);
-	if (bytes_written != mod->core_size) {
+	if (bytes_written != mod->core_layout.size) {
 		KJ_DMESG("[Error]: core section write failed, wrote %d bytes expected %d",
-				bytes_written, mod->core_size);
+				bytes_written, mod->core_layout.size);
 		goto error_write;
 	}
 
