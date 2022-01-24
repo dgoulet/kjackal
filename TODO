@@ -1,5 +1,0 @@
-- Recreate .ko from module detected. We can use the module ELF section saved in
-  the kernel for that. It's just a painful process to do it but it's not
-  impossible.
-
-- Detect the test module "undetectable-mod/"
